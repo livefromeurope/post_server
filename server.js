@@ -134,7 +134,8 @@ app.post("/posts", async (req, res)=>{
         created_date:obj.created_date,
         votes:obj.votes,
         comment_count:obj.comment_count,
-        image:obj.image});
+        image:obj.image,
+        status:obj.status});
     res.send({post});
 });
 
