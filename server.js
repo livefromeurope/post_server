@@ -115,7 +115,9 @@ app.get('/posts', async (req, res)=> {
     */
     //const posts = await db.collection("posts").find(queries).limit(limit).sort([['_id', -1]]).toArray();
     const posts = await db.collection("posts").find(queries).limit(limit).sort({created_date:-1}).toArray();
+    //console.log(posts)
     res.json({posts});
+
 
 });
 
@@ -135,7 +137,10 @@ app.post("/posts", async (req, res)=>{
         votes:obj.votes,
         comment_count:obj.comment_count,
         image:obj.image,
-        status:obj.status});
+        status:obj.status,
+        tags:obj.tags,
+        type:obj.type
+        });
     res.send({post});
 });
 
