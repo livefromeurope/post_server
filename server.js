@@ -82,7 +82,14 @@ app.get('/posts', async (req, res)=> {
         var queries = req.query;
         console.log(2)
     }
-    else if(cat.constructor == String){
+    else if(req.query.search){
+        delete req.query.limit;
+        delete req.query.date;
+        search_token = req.query.search
+        var queries = {$text: {$search: search_token}};
+        console.log(queries)
+        console.log('NOW')
+    } else if(cat.constructor == String){
         delete req.query.limit;
         delete req.query.date;
         var queries = req.query;
