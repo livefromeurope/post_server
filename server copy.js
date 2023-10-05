@@ -61,79 +61,72 @@ app.get('/', (req,res)=>{
 
 //////POSTS/////////
 // read post
-app.get('/posts', async (req, res) => {
-    try {
-        const db = await connectToDatabase('posts');
-        let cat = req.query.category;
-        let limit = Number(req.query.limit)
-        let query_date = req.query.date
-        
-        console.log(req.query)
-        console.log(cat)
-        console.log(limit)
+app.get('/posts', async (req, res)=> {
     
-        if(Object.keys(req.query).length <= 1){
-            var queries = {}
-            //console.log(1)
-        }else if (cat === undefined){
-            //var queries = req.query
-            delete req.query.limit;
-            delete req.query.date;
-            var queries = req.query;
-            //console.log(2)
-        }
-        else if(req.query.search){
-            delete req.query.limit;
-            delete req.query.date;
-            search_token = req.query.search
-            if(search_token.includes(";")){
-                let search_tokens = search_token.split(';');
-                search_token = ''
-                search_token = search_tokens.map(item => `\"${item}\"`).join(' ');
-                console.log(search_token);
-        
-            }
-             
-            var queries = {$text: {$search: search_token}};
-            console.log(queries)
-            console.log('NOW')
-        } else if(cat.constructor == String){
-            delete req.query.limit;
-            delete req.query.date;
-            var queries = req.query;
-            console.log(queries)
-            console.log(3)
-        }else if(cat.constructor == Array){
-            console.log('Array')
-            //var queries = req.query['category']
-            var queries = {category: {$in: []}}
-            //console.log(queries['category'].$in)
-            queries['category'].$in.push.apply(queries['category'].$in,cat)
-            console.log(queries)
-            //console.log(query)
-            console.log(4)
-        }
-        else{
-            var queries = {};
-            console.log(5)
-        }
+    const db = await connectToDatabase('posts');
+    let cat = req.query.category;
+    let limit = Number(req.query.limit)
+    let query_date = req.query.date
     
-        let json = {$lt: query_date}
-        //console.log(json)
-        queries.created_date = json
-        //console.log(queries)
-        
-    
-        const posts = await db.collection("posts").find(queries).limit(limit).sort({created_date:-1}).toArray();
-        //console.log(posts)
-        res.json({posts});
+    console.log(req.query)
+    console.log(cat)
+    console.log(limit)
 
-    } catch (error) {
-        console.error("Error fetching posts:", error);
-        res.status(500).json({ status: '500', error: 'Internal Server Error' });
+    if(Object.keys(req.query).length <= 1){
+        var queries = {}
+        console.log(1)
+    }else if (cat === undefined){
+        //var queries = req.query
+        delete req.query.limit;
+        delete req.query.date;
+        var queries = req.query;
+        console.log(2)
     }
-});
+    else if(req.query.search){
+        delete req.query.limit;
+        delete req.query.date;
+        search_token = req.query.search
+        var queries = {$text: {$search: search_token}};
+        console.log(queries)
+        console.log('NOW')
+    } else if(cat.constructor == String){
+        delete req.query.limit;
+        delete req.query.date;
+        var queries = req.query;
+        console.log(queries)
+        console.log(3)
+    }else if(cat.constructor == Array){
+        console.log('Array')
+        //var queries = req.query['category']
+        var queries = {category: {$in: []}}
+        //console.log(queries['category'].$in)
+        queries['category'].$in.push.apply(queries['category'].$in,cat)
+        console.log(queries)
+        //console.log(query)
+        console.log(4)
+    }
+    else{
+        var queries = {};
+        console.log(5)
+    }
 
+    let json = {$lt: query_date}
+    console.log(json)
+    queries.created_date = json
+    console.log(queries)
+    
+
+    /*
+    //kick query and above and add  {}
+    //adjust
+    */
+    //const posts = await db.collection("posts").find(queries).limit(limit).sort([['_id', -1]]).toArray();
+    const posts = await db.collection("posts").find(queries).limit(limit).sort({created_date:-1}).toArray();
+    console.log(posts)
+    res.json({posts});
+
+
+});
 
 
 // create post
